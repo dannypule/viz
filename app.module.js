@@ -3,8 +3,6 @@
 
     angular.module('app', [
         'app.main',
-        'app.classes',
-        'app.students',
 
         'ngAnimate', 'ngSanitize', 'ui.router'
 
