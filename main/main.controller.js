@@ -14,20 +14,63 @@
         var vm = this; // view model object setup
         vm.content;
 
+        var groupCrimes = [];
+
         var ref = new Firebase("https://y7e9dk0dmf3ls.firebaseio.com/content");
         vm.content= $firebaseArray(ref);
 
         activate();
 
         var map = new google.maps.Map(d3.select("#map").node(), {
-  zoom: 8,
-  center: new google.maps.LatLng(37.76487, -122.41948),
+  zoom: 11,
+  center: new google.maps.LatLng(51.5317, 0.1243),
   mapTypeId: google.maps.MapTypeId.TERRAIN
 });
+
 
 // Load the station data. When the data comes back, create an overlay.
 d3.json("data/street_crime.json", function(error, data) {
   if (error) throw error;
+
+  var groupsCrimes = [];
+
+  data.forEach(function(item, index){
+    console.log(item); return;
+    var isNewItem = false;
+    var newItem = {};
+
+    if (index === 0) {
+        groupsCrimes[0] = {
+            longitude: 5,
+            latitude: 5,
+            crimes: '000'
+        }
+    }
+
+    groupsCrimes.forEach(function(itemmm){
+        if (!isNewItem && item.latitude === itemmm.location.latitude && item.location.longitude === itemmm.location.longitude) {
+            groupsCrimes.item.crimes = groupsCrimes.item.crimes + ', ' + item.category;
+        } else {
+            isNewItem = true;
+        }
+        // console.log(itemmm);
+    });
+
+    if (isNewItem) {
+        newItem.latitude = item.location.latitude;
+        newItem.longitude = item.location.longitude;
+        newItem.crimes = item.category;
+        // groupsCrimes.latitude = groupsCrimes.latitude;
+        // groupsCrimes.longitude = groupsCrimes.longitude;
+        groupsCrimes.push(newItem);
+          // console.log(item);
+    }
+  });
+
+  // data = groupsCrimes;
+  // console.log(groupsCrimes);
+
+  // console.log(data);
 
   var overlay = new google.maps.OverlayView();
 
@@ -63,7 +106,8 @@ d3.json("data/street_crime.json", function(error, data) {
           .text(function(d) { return d.key; });
 
       function transform(d) {
-        d = new google.maps.LatLng(d.value[1], d.value[0]);
+        // console.log(d);
+        d = new google.maps.LatLng(d.value.location.latitude, d.value.location.longitude);
         d = projection.fromLatLngToDivPixel(d);
         return d3.select(this)
             .style("left", (d.x - padding) + "px")
