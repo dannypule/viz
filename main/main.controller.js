@@ -32,43 +32,56 @@
 d3.json("data/street_crime.json", function(error, data) {
   if (error) throw error;
 
-  var groupsCrimes = [];
+  var groupedCrimes = [];
 
   data.forEach(function(item, index){
-    console.log(item); return;
+    return;
+    // console.log(item); return;
+    // console.log(groupedCrimes);
     var isNewItem = false;
     var newItem = {};
 
     if (index === 0) {
-        groupsCrimes[0] = {
-            longitude: 5,
-            latitude: 5,
-            crimes: '000'
-        }
+        newItem.latitude = item.location.latitude;
+        newItem.longitude = item.location.longitude;
+        newItem.crimes = item.category;
+        // groupedCrimes.latitude = groupedCrimes.latitude;
+        // groupedCrimes.longitude = groupedCrimes.longitude;
+        groupedCrimes.push(newItem);
+        return;
     }
 
-    groupsCrimes.forEach(function(itemmm){
-        if (!isNewItem && item.latitude === itemmm.location.latitude && item.location.longitude === itemmm.location.longitude) {
-            groupsCrimes.item.crimes = groupsCrimes.item.crimes + ', ' + item.category;
+    groupedCrimes.forEach(function(itemmm, index){
+        // console.group(index);
+        // console.log(groupedCrimes);
+        console.log(index);
+        // console.groupEnd(index);
+        // return;
+        if (!isNewItem && item.location.latitude === itemmm.latitude && item.location.longitude === itemmm.longitude) {
+            debugger;
+            groupedCrimes[index].crimes += ', ' + item.category;
         } else {
             isNewItem = true;
         }
-        // console.log(itemmm);
+        // console.log('itemmm');
     });
 
     if (isNewItem) {
         newItem.latitude = item.location.latitude;
         newItem.longitude = item.location.longitude;
         newItem.crimes = item.category;
-        // groupsCrimes.latitude = groupsCrimes.latitude;
-        // groupsCrimes.longitude = groupsCrimes.longitude;
-        groupsCrimes.push(newItem);
-          // console.log(item);
+        // groupedCrimes.latitude = groupedCrimes.latitude;
+        // groupedCrimes.longitude = groupedCrimes.longitude;
+        groupedCrimes.push(newItem);
+        isNewItem = false;
+        // console.log(item);
     }
+    // console.log(item);
   });
 
-  // data = groupsCrimes;
-  // console.log(groupsCrimes);
+  // data = groupedCrimes;
+  console.log(groupedCrimes);
+  // return;
 
   // console.log(data);
 
