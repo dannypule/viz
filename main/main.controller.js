@@ -20,11 +20,20 @@
         activate();
 
         function activate() {
-            vm.content.$add({
-                text: 'foo'
-            });
+            // vm.content.$add({
+            //     text: 'foo'
+            // });
 
-            console.log(vm.content);
+            // console.log(vm.content);
+
+            $http({
+              method: 'GET',
+              url: '/someUrl'
+            }).then(function successCallback(response) {
+                console.log(response);
+              }, function errorCallback(response) {
+                console.warn(response);
+              });
         } //activate
 
     } // MainController
