@@ -4,7 +4,9 @@
     angular.module('app', [
         'app.main',
 
-        'ngAnimate', 'ngSanitize', 'ui.router'
+        'ngAnimate', 'ngSanitize', 'ui.router',
+
+        'firebase'
 
     ]).config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
         var d = new Date();
@@ -12,7 +14,7 @@
         var versioning = '?v='+n;
 
         $urlRouterProvider.otherwise('/');
-        
+
         $stateProvider
             .state('main', {
                 url: '/',
@@ -20,6 +22,6 @@
                 controller: 'MainController',
                 controllerAs: 'vm'
             });
-            
+
     }]);
 })();
