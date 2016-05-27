@@ -27,7 +27,7 @@
 
 
 // Load the station data. When the data comes back, create an overlay.
-d3.json("data/street_crime.json", function(error, data) {
+d3.json("data/street_crime_v4.json", function(error, data) {
     if (error) throw error;
 
     var groupedEvents = [];
@@ -40,12 +40,14 @@ d3.json("data/street_crime.json", function(error, data) {
             groupedEvents[event.location.latitude] = {
                 latitude: event.location.latitude,
                 longitude: event.location.longitude,
-                categories: event.category
+                categories: event.category,
+                count: 1
             }
             return;
         }
 
         groupedEvents[event.location.latitude].categories += ', ' + event.category;
+        groupedEvents[event.location.latitude].count++;
     });
 
     data = groupedEvents;
@@ -74,7 +76,15 @@ d3.json("data/street_crime.json", function(error, data) {
 
       // Add a circle.
       marker.append("circle")
-          .attr("r", 4.5)
+          .attr("r", function(d) {
+            if (d.value.count >= 40) {
+                return 40;
+            } else if (d.value.count > 4) {
+                return d.value.count
+            } else {
+                return 4;
+            }
+           })
           .attr("cx", padding)
           .attr("cy", padding);
 
@@ -83,7 +93,8 @@ d3.json("data/street_crime.json", function(error, data) {
           .attr("x", padding + 7)
           .attr("y", padding)
           .attr("dy", ".31em")
-          .text(function(d) { return d.value.categories; });
+          .style("font-size", "16px")
+          .text(function(d) { return d.value.count; });
 
       function transform(d) {
         // console.log(d);
