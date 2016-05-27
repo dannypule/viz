@@ -14,8 +14,6 @@
         var vm = this; // view model object setup
         vm.content;
 
-        var groupCrimes = [];
-
         var ref = new Firebase("https://y7e9dk0dmf3ls.firebaseio.com/content");
         vm.content= $firebaseArray(ref);
 
@@ -30,65 +28,34 @@
 
 // Load the station data. When the data comes back, create an overlay.
 d3.json("data/street_crime.json", function(error, data) {
-  if (error) throw error;
+    if (error) throw error;
 
-  var groupedCrimes = [];
+    var groupedEvents = [];
 
-  data.forEach(function(item, index){
-    return;
-    // console.log(item); return;
-    // console.log(groupedCrimes);
-    var isNewItem = false;
-    var newItem = {};
+    var groupedCrimes = [];
 
-    if (index === 0) {
-        newItem.latitude = item.location.latitude;
-        newItem.longitude = item.location.longitude;
-        newItem.crimes = item.category;
-        // groupedCrimes.latitude = groupedCrimes.latitude;
-        // groupedCrimes.longitude = groupedCrimes.longitude;
-        groupedCrimes.push(newItem);
-        return;
-    }
-
-    groupedCrimes.forEach(function(itemmm, index){
-        // console.group(index);
-        // console.log(groupedCrimes);
-        console.log(index);
-        // console.groupEnd(index);
-        // return;
-        if (!isNewItem && item.location.latitude === itemmm.latitude && item.location.longitude === itemmm.longitude) {
-            debugger;
-            groupedCrimes[index].crimes += ', ' + item.category;
-        } else {
-            isNewItem = true;
+    data.forEach(function(event){
+        if(!groupedEvents[event.location.latitude]){
+            // groupedCrimes.push(event);
+            groupedEvents[event.location.latitude] = {
+                latitude: event.location.latitude,
+                longitude: event.location.longitude,
+                categories: event.category
+            }
+            return;
         }
-        // console.log('itemmm');
+
+        groupedEvents[event.location.latitude].categories += ', ' + event.category;
     });
 
-    if (isNewItem) {
-        newItem.latitude = item.location.latitude;
-        newItem.longitude = item.location.longitude;
-        newItem.crimes = item.category;
-        // groupedCrimes.latitude = groupedCrimes.latitude;
-        // groupedCrimes.longitude = groupedCrimes.longitude;
-        groupedCrimes.push(newItem);
-        isNewItem = false;
-        // console.log(item);
-    }
-    // console.log(item);
-  });
+    data = groupedEvents;
+    console.log(data);
+    // return;
 
-  // data = groupedCrimes;
-  console.log(groupedCrimes);
-  // return;
+    var overlay = new google.maps.OverlayView();
 
-  // console.log(data);
-
-  var overlay = new google.maps.OverlayView();
-
-  // Add the container when the overlay is added to the map.
-  overlay.onAdd = function() {
+    // Add the container when the overlay is added to the map.
+    overlay.onAdd = function() {
     var layer = d3.select(this.getPanes().overlayLayer).append("div")
         .attr("class", "stations");
 
@@ -116,11 +83,11 @@ d3.json("data/street_crime.json", function(error, data) {
           .attr("x", padding + 7)
           .attr("y", padding)
           .attr("dy", ".31em")
-          .text(function(d) { return d.key; });
+          .text(function(d) { return d.value.categories; });
 
       function transform(d) {
         // console.log(d);
-        d = new google.maps.LatLng(d.value.location.latitude, d.value.location.longitude);
+        d = new google.maps.LatLng(d.value.latitude, d.value.longitude);
         d = projection.fromLatLngToDivPixel(d);
         return d3.select(this)
             .style("left", (d.x - padding) + "px")
