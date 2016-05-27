@@ -32,11 +32,10 @@ d3.json("data/street_crime_v4.json", function(error, data) {
 
     var groupedEvents = [];
 
-    var groupedCrimes = [];
+    console.time('charting');
 
     data.forEach(function(event){
         if(!groupedEvents[event.location.latitude]){
-            // groupedCrimes.push(event);
             groupedEvents[event.location.latitude] = {
                 latitude: event.location.latitude,
                 longitude: event.location.longitude,
@@ -109,6 +108,8 @@ d3.json("data/street_crime_v4.json", function(error, data) {
 
   // Bind our overlay to the map…
   overlay.setMap(map);
+
+  console.timeEnd('charting');
 });
 
 
