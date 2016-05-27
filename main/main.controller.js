@@ -25,6 +25,7 @@
             });
 
             console.log(vm.content);
+            console.log("foo");
         } //activate
 
     } // MainController
